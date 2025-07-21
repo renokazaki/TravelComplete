@@ -14,7 +14,7 @@ export default async function DashboardPage({
 }: {
   searchParams?: { text?: string };
 }) {
-  let response: unknown = null;
+  let response: string | null = null;
   const inputText = searchParams?.text || "";
 
   if (inputText) {
