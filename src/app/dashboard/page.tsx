@@ -12,10 +12,11 @@ async function callN8nApi(text: string) {
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams?: { text?: string };
+  searchParams: Promise<{ text?: string }>;
 }) {
+  const paramsData = await searchParams;
   let response: string | null = null;
-  const inputText = searchParams?.text || "";
+  const inputText = paramsData?.text || "";
 
   if (inputText) {
     response = await callN8nApi(inputText);
