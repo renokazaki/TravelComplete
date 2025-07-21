@@ -50,15 +50,15 @@ model Travel {
 
 model TravelUser {
   id       String @id @default(cuid())
-  userId   String
+  clerkId   String
   travelId String
   joinedAt DateTime   @default(now())
 
   // リレーション
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [clerkId], references: [clerkId], onDelete: Cascade)
   travel Travel @relation(fields: [travelId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, travelId]) // 同じユーザーが同じ旅行に重複参加しないように
+  @@unique([clerkId, travelId]) // 同じユーザーが同じ旅行に重複参加しないように
   @@map("travel_users")
 }
 

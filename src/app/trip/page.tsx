@@ -4,18 +4,28 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plane, Users, Calendar, Plus } from "lucide-react";
 import Link from "next/link";
 import { prisma } from "../../../prisma/prisma";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+// import { Travel } from "@prisma/client";
 
 export default async function TripPage() {
+  const { userId } = await auth();
 
-  const travels = await prisma.travel.findMany({
-    // where: {
-    //   users: {
-    //     some: {
-    //       userId: session?.user?.id,
-    //     },
-    //   },
-    // },
+  if (!userId) {
+    return redirect("/sign-in");
+  }
+
+  const travels = await prisma.travelUser.findMany({
+    where: {
+      user: {
+        clerkId: userId,
+      },
+    },
+    include: {
+      travel: true,
+    },
   });
+  console.log(travels);
   const friends = [];
   const activities = [];
   const CreateTripButton = () => {
@@ -69,15 +79,15 @@ export default async function TripPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-           {travels.map((travel) => (
-            <Link href={`/trip/${travel.id}`} key={travel.id}>
-            <Card>
-              <CardHeader>
-                <CardTitle>{travel.title}</CardTitle>
-              </CardHeader>
-            </Card>
-            </Link>
-           ))}
+            {travels.map((travelUser) => (
+              <Link href={`/trip/${travelUser.travelId}`} key={travelUser.id}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{travelUser.travel.title}</CardTitle>
+                  </CardHeader>
+                </Card>
+              </Link>
+            ))}
           </div>
 
           {travels.length === 0 && (
@@ -106,9 +116,9 @@ export default async function TripPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div>テスト１</div>
-          <div>テスト２</div>
-          <div>テスト３</div>
+            <div>テスト１</div>
+            <div>テスト２</div>
+            <div>テスト３</div>
           </div>
 
           {friends.length === 0 && (
@@ -127,7 +137,7 @@ export default async function TripPage() {
           <h2 className="text-2xl font-semibold">最近のアクティビティ</h2>
 
           <div className="space-y-4">
-           <div>ここに友達のアクティビティが表示される</div>
+            <div>ここに友達のアクティビティが表示される</div>
           </div>
 
           {activities.length === 0 && (
